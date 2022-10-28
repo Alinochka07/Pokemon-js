@@ -1,0 +1,14 @@
+div#pokemon-infos {
+    padding-bottom: 80px;
+    display: flex;
+    padding-bottom: 30px;
+}
+div#pokemon-details {
+    padding-bottom: 120px;
+}
+div#pokemon-details > h1 {
+    display: flex;
+}
+div#found-pokemons {
+    padding: 40px 35px;
+}
