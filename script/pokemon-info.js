@@ -14,3 +14,6 @@ document.querySelector("#details-button").onclick = function(event) {
     pokemonCard.appendChild(createDiv);
     alert(1234);
    }
+
+
+   

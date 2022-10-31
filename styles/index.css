@@ -75,7 +75,8 @@ button.search {
 button.favorites {
     background-color: transparent;
     border: 1px solid rgb(94, 93, 93);
-    color: rgb(94, 93, 93)
+    color: rgb(94, 93, 93);
+    cursor: pointer;
 }
 
 /* Main  */
@@ -160,11 +161,11 @@ select.drop-down-select{
 
 /* Results  */
 
-div#results, div#abilities, .search-pokemons > h1 {
+section#results, div#abilities, .search-pokemons > h1, #favorites-pokemons {
     padding: 0 35px;
 }
 
-.poke-abi, .pokeList, .pokemon-card {
+.poke-abi, .pokeList, .pokemon-card, .pokeFavList {
     width: 525px;
     background: white;
     border-radius: 5px;
@@ -177,11 +178,14 @@ div#results, div#abilities, .search-pokemons > h1 {
     height: 150px;
     padding: 5px 0 0 25px;
 }
+.pokeList span h2:nth-child(1) {
+    padding-right: 10px;
+}
 .poke-url a {
     text-decoration: none;
     font-size: 14px;
 }
-.pokeList, .pokemon-det {
+.pokeList, .pokeFavList {
     height: 150px;
     /* padding: 0 25px; */
     display: flex;
@@ -191,8 +195,12 @@ div#results, div#abilities, .search-pokemons > h1 {
     align-content: space-between;
     align-items: flex-start;
 }
+.pokeFavList {
+    padding: 0 25px;
+    width: 500px;
+}
 
-.pokemons-list {
+.pokemons-list, #pokemon-favorites {
     display: flex;
     /* padding-right: 35px; */
     flex-wrap: wrap;
@@ -278,6 +286,11 @@ button#prev-button, button#next-button {
     border: 1px solid rgb(94, 93, 93);
     border-radius: 5px;
     cursor: pointer;
+}
+
+
+section#favorites-pokemons {
+    display: none;
 }
 
 

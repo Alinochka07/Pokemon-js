@@ -15,12 +15,13 @@
         <header>
             <div class="pokemons">
                 <div class="left">
-                    <h3><a href="index.html">Pokemons</a></h3>
+                    <h3><a id="logo" href="index.html">Pokemons</a></h3>
                 </div>
                 <div class="right">
                     <button class="search">Search</button>
-                    <a href="favorites.html"><button class="favorites" >Favorites</button></a>
+                    <button onclick="showFavorites()" class="favorites">Favorites</button>
                 </div>
+                <div class="dataa"></div>
             </div>
         </header>
         <main>
@@ -46,25 +47,23 @@
                             </select>
                         </div>
                         <div class="table-body-cells">
-                            <select id="byAlphabetFilter" onchange="filterByName()" class="drop-down-select">
+                            <select id="byAlphabetFilter" 
+                            onchange="orderByName()" 
+                            class="drop-down-select">
                                 <option value="az">A-Z</option>
                                 <option value="za">Z-A</option>
                             </select>
                         </div>
                         <div class="table-body-cells">
                             <input id="pageValue" onchange="pageValueFunction()">
-                            <!-- <select id="pageValue" class="drop-down-select" onchange="pageValueFunction()">
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select> -->
+                            
         
                         </div>
                     </div>
                     
                 </div>
 
-                <div id="results">
+                <section id="results">
                     <h1>Results</h1>
                     <p id="results-error"></p>
                     <p id="no-results"></p>
@@ -74,11 +73,35 @@
                         <div class="pokemons-list">
 
                         </div>
-                        <div class="detail">
+                        <div id="detail">
 
                         </div>
                     </div>
-                </div>
+                </section>
+
+                <section id="favorites-pokemons">
+                    <div id="favorites">
+                        <h1>Favorites</h1>
+                        <p id="favorites-error"></p>
+                        <p id="no-favorites"></p>
+                        <div id="pokemon-favorites">
+                            
+                        </div>
+                    </div>
+                    
+                    
+                </section>
+
+                <section id="pokeInfo">
+                    <div id="pokemon-infos">
+                        <h1>Pokemon Info</h1>
+                        <p id="pokemon-info-error"></p>
+                        <div class="pokemon-info">
+                            
+                        </div>
+                       
+                    </div>
+                </section>
                 
                 <nav>
                     <ul id="pagination">

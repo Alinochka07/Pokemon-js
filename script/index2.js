@@ -12,19 +12,253 @@ let pageNumber = 20;
 
 function pageValueFunction() {
     pageNumber = document.querySelector('#pageValue').value;
-    console.log(pageNumber);
     renderPokemons();
 }
 
 
 
+
+
+
+async function orderByName() {
+    let byName = document.querySelector('#byAlphabetFilter');
+    let select = byName.options[byName.selectedIndex].value;
+    // code
+
+    let elements = document.querySelectorAll('.pokeList');
+    let elementsNames = document.querySelectorAll('.poke-name');
+    let elementsId = document.querySelectorAll('.pokemonId');
+    let elementsImage = document.querySelectorAll('.pokemonImage');
+    let elementsForMoreInfo = document.querySelectorAll('.for-more-button');
+
+    let pokiData = [];
+
+    let req = await fetch(pokemonUrl);
+    let response = req.json();
+    pokiData =  response.results;
+
+    pokiData = Array.prototype.slice.call(elements, 0);
+    console.log(pokiData);
+
+    if (select === "az") {
+        pokiData.sort(function(a, b) {
+            pokiData.sort((a, b) => {
+                a.elementsNames.localeCompare(b.elementsNames);
+            })
+        })
+    
+        var parent = document.querySelectorAll('.pokeList');
+        parent.innerHTML = "";
+    
+        for(var i = 0, l = pokiData.length; i < l; i++) {
+            parent.appendChild(pokiData[i]);
+        }
+    } else if (select === "za") {
+        pokiData.reverse();
+    }
+    
+    renderPokemons();
+}
+
+
+
+
+let addToFavs = document.getElementsByClassName('addToFav');
+let favForm = document.getElementById('poki-fav');
+
+
+function addToFavorites() {
+       for (const addToFav of addToFavs) {
+           addToFav.addEventListener('click', function() {
+               let favPokemon = this.parentNode.parentNode;
+               let favPokemonName = this.previousSibling.previousSibling.innerHTML;
+               let favPokemonId = this.parentNode.nextSibling.nextSibling.innerHTML;
+               let favPokemonImage = this.parentNode.nextSibling.nextSibling.nextSibling.nextSibling.src;
+            //    let favPokemonIcon = '.'+this.lastElementChild.className.slice(3);
+                let favPokemonIcon = this.lastElementChild;
+   
+               favPokemonIcon.setAttribute('style', 'color: orange;')
+               
+                 
+               let favoritePokemonsList = document.createElement('div');
+               favoritePokemonsList.classList.add('pokeList')
+               favoritePokemonsList.innerHTML = `<span><h2>Name: </h2> <h2 class="poke-name">${favPokemonName}</h2>&nbsp &nbsp
+                                                   <button class="removeFromFav" onclick="removeFromFavs()">
+                                                   <i id="favIcon" class="fa ${favPokemonIcon.className.slice(3)}"></i></button></span>
+                                                   <p class="pokemonId"  data-sort="id">${favPokemonId}</p>
+                                                   <img alt="pokemon-avatar" class="pokemonImage right" src="${favPokemonImage}">
+                                                   <a href="pokemon-info.html?${favPokemonId}" onclick="pokemonDetails()" class="for-more-button">
+                                                   <input type="submit" value="Click for more details" id="details-button" class="details-btn">
+                                                   </a>`;
+   
+                let content = document.querySelector('#pokemon-favorites');
+
+                content.appendChild(favoritePokemonsList);
+                alert("Your pokemon succesfully has been added to favorites!")
+               
+                const obj = {
+                    pName: favPokemonName,
+                    pId: favPokemonId,
+                    pImage: favPokemonImage,
+                    pIcon: favPokemonIcon
+                }
+   
+                localStorage.setItem("obj", JSON.stringify(obj));
+            
+            let arr = [];
+            const setLocalStorage = (item) => {    
+                const fav = JSON.parse(localStorage.getItem('obj'));
+                fav.push(item);
+                localStorage.setItem('fav', JSON.stringify(obj));
+             }
+
+             const saveLog = (e) => {
+                e.preventDefault();
+                setLocalStorage('obj', [...this.state.obj, this.state.fav]);
+            }
+            removeFromFavs(); 
+                  
+           })
+       }
+}
+   
+
+
+
+function removeFromFavs() {
+    
+    let pokeLists = document.querySelector('.removeFromFav');
+    pokeLists.addEventListener('click', del_function, false);
+
+
+    function del_function(evt) {
+        evt.preventDefault();
+        this.parentNode.parentNode.remove();
+    };
+    
+}
+
+
+   
+window.onload = function() {
+    addToFavorites();
+}
+
+
+
+
+function showFavorites() {
+    let favSection = document.getElementById('favorites-pokemons');
+    favSection.setAttribute('style', 'display: flex; flex-wrap: wrap; flex-direction: column;');
+   
+    let resultsSection = document.getElementById('results');
+    resultsSection.setAttribute('style', 'display: none');
+
+    // removeFromFavs(); 
+}
+
+
+
+
+
+
+let searchbar = document.getElementById("searchbar");
+let dataStore = [];
+let dataa = document.querySelector('.pokemons-list');
+
+
+getSearchedData();
+
+async function getSearchedData() {
+    try {
+        const response = await fetch(pokemonUrl);
+        const pokemonData = await response.json()
+        dataStore = pokemonData.results;
+        dataa.innerHTML = getHTML(dataStore);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function getHTML(){
+    if (dataStore) {
+        dataStore.map((pokemon) => {
+            let pokemon_Id = `${pokemon.url.slice(34).replace("/","")}`;
+            let createDiv = document.createElement('div');
+            createDiv.classList.add('pokeList');
+            createDiv.innerHTML = `<span><h2 class="poke-name">Name: ${pokemon.name}</h2>&nbsp &nbsp<i class='fa fa-heart right'></i></span>
+                                        
+                                        <p class='pokemonId' id=${pokemon_Id}> ID: ${pokemon_Id}</p>
+                                        <img alt="pokemon-avatar" class="pokemonImage" 
+                                            src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon_Id}.png'>
+                                        
+                                        <a href='pokemon-info.html?${pokemon_Id}' >
+                                            <button onclick="pokemonDetails()" type='submit' id='details-button' class='right details-btn'>Click for more info</button>
+                                        </a>`;
+
+            let pokemonCard = document.querySelector('.pokemons-list');
+            pokemonCard.appendChild(createDiv);
+    })
+    }        
+            
+}
+
+function noResultHTML(){
+    return `<div class=""><h1 class="noResults">No Results Found</h1></div>`;
+}
+
+searchbar.addEventListener('keyup', function(e){
+    const currentword = e.target.value;
+    const filteredData= dataStore.filter(o => o.pName.includes(currentword));
+    dataa.innerHTML = filteredData.length ? getHTML(filteredData) : noResultHTML();
+});
+
+
+let pokeDetails = document.getElementsByClassName('details-button');
+let insertPokeInfo = document.getElementById('pokemon-info');
+
+function pokemonDetails() {
+
+    try {
+            for (const pokeDetail of pokeDetails) {
+                pokeDetail.addEventListener('click', function() {
+                    let pokemon = this.parentNode;
+                    let pokemonName = this.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.innerHTML;
+                    let pokemonId = this.parentNode.nextSibling.nextSibling.innerHTML;
+                    let pokemonImage = this.parentNode.nextSibling.nextSibling.nextSibling.nextSibling.src;
+                    
+                    console.log(pokemonName);
+                      
+                    let pokemonsList = document.createElement('div');
+                    pokemonsList.classList.add('pokeList')
+                    pokemonsList.innerHTML = `<span><h2>Name: </h2> <h2 class="poke-name">${pokemonName}</h2>&nbsp &nbsp
+                                                        <button class="removeFromFav" onclick="removeFromFavs()">
+                                                        <i id="favIcon" class="fa ${favPokemonIcon.className.slice(3)}"></i></button></span>
+                                                        <p class="pokemonId"  data-sort="id">${pokemonId}</p>
+                                                        <img alt="pokemon-avatar" class="pokemonImage right" src="${pokemonImage}">
+                                                        <a href="pokemon-info.html?${pokemonId}" onclick="pokemonDetails()" class="for-more-button">
+                                                        <input type="submit" value="Click for more details" id="details-button" class="details-btn">
+                                                        </a>`;
+        
+                     let content = document.querySelector('#pokemon-info');
+     
+                     content.appendChild(pokemonsList);
+            
+                    
+            })
+     }
+    } catch(error) {
+        console.log('ERRORRR')
+    }
+   
+}
+
+pokemonDetails();
+
 async function renderPokemons() {
     await getPokemons();
 
     var pokemons = '';
-
-
-
     try {
         pokemonsList.filter((row, index) => {
             let start = (currentPage - 1) * pageNumber;
@@ -35,12 +269,15 @@ async function renderPokemons() {
         })
         .forEach(pokemon => {
             let pokemonId = `${pokemon.url.slice(34).replace("/","")}`;
+            let pokemonName = pokemon.name;
+            let pokemonImage = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+        
             pokemons += '<div class="pokeList">\
-                            <span><h2 class="poke-name" data-sort ="name">Name: '+pokemon.name+'</h2>&nbsp &nbsp\
-                            <i class="fa fa-heart right"></i></span>\
+                            <span><h2>Name: </h2> <h2 class="poke-name">'+pokemonName+'</h2>&nbsp &nbsp\
+                            <button class="addToFav" onclick="addToFavorites()"><i id="favIcon" class="fa fa-heart"></i></button></span>\
                             <p class="pokemonId" id="'+pokemonId+'" data-sort="id"> ID: '+pokemonId+'</p>\
-                            <img alt="pokemon-avatar" class="pokemonImage right" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+pokemonId+'.png">\
-                            <a href="pokemon-info.html?'+pokemonId+'" onclick="pokemonDetails()"><input type="submit" value="Click for more details" id="details-button" class="details-btn"></a>\
+                            <img alt="pokemon-avatar" class="pokemonImage right" src="'+pokemonImage+'">\
+                            <a href="pokemon-info.html?'+pokemonId+'" onclick="pokemonDetails()" class="for-more-button"><input type="submit" value="Click for more details" id="details-button" class="details-btn"></a>\
                         </div>';
         })
     
@@ -54,6 +291,7 @@ async function renderPokemons() {
 }
 
 renderPokemons();
+
 
 
 
@@ -81,7 +319,8 @@ async function getPokemons() {
     try {
         const response = await fetch(pokemonUrl);
         const pokemonData = await response.json()
-        pokemonsList = pokemonData.results
+        pokemonsList = pokemonData.results;
+       
         
     } catch (error) {
         console.log(error)
@@ -97,10 +336,6 @@ getPokemons();
 
 
 
-
-// byAlphabetFilter
-
-// products.sort((a,b) => a.category > b.category ? 1 : b.category > a.category ? -1 : 0)
 
 
 // async function getPokemons() {
@@ -146,178 +381,3 @@ getPokemons();
 
 // }
 
-
-// function pokemonDetails() {
-//     console.log('flflf');
-//     try {
-//         let createAnotherDiv = document.createElement('div');
-//         createAnotherDiv.classList.add('pokemon-det');
-//         createDiv.innerHTML = '<div><p>Some text here</p></div>'
-//         let pokemonCard = document.querySelector('.pokemon-info');
-//         pokemonCard.appendChild(createAnotherDiv);
-//     } catch(error) {
-//         console.log('ERRORRR')
-//     }
-   
-// }
-
-
-// Pagination
-
-// function myPagination() {
-//     const displayPageNav = perPage => {
-  
-//         let pagination =``
-//         const totalItems = res.length;
-//         perPage = perPage ? perPage : 1
-//         const pages = Math.ceil(totalItems/perPage)
-        
-//         for(let i = 1; i <= pages; i++) {
-//           pagination += `<a href="#" onClick="displayItems(${i},${perPage})" >${i}</a>`
-//         }
-      
-//         document.getElementById('pagination').innerHTML = pagination
-        
-//       }
-      
-//       const displayItems = ( page = 1, perPage = 2 ) => {
-        
-//        let index, offSet
-        
-//         if(page == 1 || page <=0)  {
-//           index = 0
-//           offSet = perPage
-//         } else if(page > res.length) {
-//           index = page - 1
-//           offSet = res.length
-//         } else {
-//           index = page * perPage - perPage
-//           offSet = index + perPage
-//         }
-        
-//         const slicedItems = res.slice(index, offSet)
-//         let pokemon_Id;
-
-//         const html = slicedItems.map(pokemon => 
-//             pokemon_Id = `${pokemon.url.slice(34).replace("/","")}`
-//             `<div class='pokeList'>
-//                 <span><h2 class="poke-name">Name: ${pokemon.name}</h2>&nbsp &nbsp<i class='fa fa-heart right'></i></span>
-//                     <p class='pokemonId' id=${pokemon_Id}> ID: ${pokemon_Id}</p>
-//                     <img alt="pokemon-avatar" class="pokemonImage" 
-//                         src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon_Id}.png'>
-                                        
-//                     <a href='pokemon-info.html?${pokemon_Id}' >
-//                         <button onclick="pokemonDetails()" type='submit' id='details-button' class='right details-btn'>Click for more info</button>
-//                     </a>
-//             </div>`)
-        
-//         document.querySelector('.pokemons-list').innerHTML = html.join('')
-       
-//       }
-      
-//       let perPage = 10
-//       displayPageNav(perPage)
-//       displayItems(1, perPage)
-// }
-
-// function myPagination() {
-//     let config = {
-//         maxResults: 100,
-//         maxPerPage: 10,
-//         page: 1
-//     }
-
-//     pageAmount = Math.ceil(config.maxResults / config.maxPerPage),
-// 	results = res;
-
-//     function getPagination() {
-//         for(let i = 1; i < res.length; i++) {
-//             results[i] = 'Result ' + i;
-//         }
-
-//         document.getElementById("next-button").onclick = function() { 
-// 			pager("next");
-// 			return false;
-// 		};
-// 		document.getElementById("prev-button").onclick = function() { 
-// 			pager("previous"); 
-// 			return false;
-// 		};
-		
-// 		document.getElementById("goTo").onclick = function() { 
-// 			pager("goTo", document.getElementById("pagination-number").value); 
-// 			return false;
-// 		};
-// 		document.getElementById("page_nav").onclick = function(e) { 
-// 			var page = e.srcElement.getAttribute("data-page");
-// 			if(page){
-// 				pager("goTo", page);
-// 			}
-// 			return false;
-// 		};
-// 		update_page();
-//     }
-
-//     function pager(action, page) {
-// 		switch (action) {
-// 			case "next-button":
-// 				if( (config.page + 1) < pageAmount ){ 
-// 					++config.page;
-// 				}
-// 				break;
-			 
-// 			case "prev-button":
-// 				if( (config.page - 1) >= 1 ){
-// 					 --config.page;
-// 				}
-// 				break;
-			
-// 			case "goTo":
-// 				config.page = page;
-// 				break;
-			
-// 			default:
-// 				break;
-// 		}
-// 		update_page();
-// 	}
-
-//     function build_nav() {
-// 		var j,
-// 			page_nav = "";
-							
-// 		for( j = config.page; j < pageAmount; j++ ){
-// 			page_nav += "<li><a data-page=" + j + ">" + j + "</a></li>\n";
-// 		}
-// 		return page_nav;
-// 	}
-
-//     function build_results(){
-// 		var k,
-// 			tmp = "",
-// 			start = ( config.page !== 1 )? config.page * config.maxPerPage : 1,
-// 			end = start + config.maxPerPage,
-// 			result;
-			
-// 		for( k = start; k < end; k++ ){
-// 			result = results[k];
-// 			if(typeof result !== "undefined"){ 
-// 				tmp += "<li>" + result + "</li>\n";
-// 			}
-// 			else {
-// 				tmp = "";
-// 			}
-// 		}
-// 		return tmp;
-// 	}				
-// 	function update_page(){
-// 		document.getElementById("curr_page").innerText = config.page;
-// 		document.getElementById("page_nav").innerHTML = build_nav();
-// 		document.getElementById("page-results").innerHTML = build_results();
-// 	}
-// 	window.addEventListener("load", function() {
-// 		getPagination();
-// 	});
-// }
-
-// myPagination();
