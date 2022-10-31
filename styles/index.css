@@ -294,5 +294,7 @@ section#favorites-pokemons {
 }
 
 
-
+section#pokeInfo {
+    display: none;
+}
 
